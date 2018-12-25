@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Mining - BitcoinPy Documentation</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+  <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Mining";
+    var mkdocs_page_input_path = "mining.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> BitcoinPy Documentation</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="tocbase current">
+    
+    
+      
+
+
+  <li class="navtree toctree-l1 inactive">
+    <a class="" href="..">Welcome to BitcoinPy</a>
+  </li>
+    
+      
+
+
+  <li class="navtree toctree-l1 inactive">
+    <a class="" href="../contracts/">Python Contracts</a>
+  </li>
+    
+      
+
+
+  
+    
+    <li class="navtree toctree-l1 page current">
+      <a class="current" href="./">
+        Mining
+      </a>
+    </li>
+    
+      
+
+
+
+  <li class="toctree-l1 current">
+    <ul class="subnav-l1 current">
+    
+      
+        <li class="toctree-l2">
+          <a class="toctree-l3" href="#general-information">General Information</a>
+        </li>
+    
+      
+        <li class="toctree-l2">
+          <a class="toctree-l3" href="#retargeting">Retargeting</a>
+        </li>
+    
+      
+        <li class="toctree-l2">
+          <a class="toctree-l3" href="#the-hashing-mechanism">The Hashing Mechanism</a>
+        </li>
+    
+      
+        <li class="toctree-l2">
+          <a class="toctree-l3" href="#pushing-to-the-network">Pushing to the Network</a>
+        </li>
+    
+      
+        <li class="toctree-l2">
+          <a class="toctree-l3" href="#inefficient-reference-miner">Inefficient "Reference Miner"</a>
+        </li>
+    
+    </ul>
+  </li>
+
+
+  
+    
+      
+
+
+  <li class="navtree toctree-l1 inactive">
+    <a class="" href="../tokensfees/">Tokens and Fees</a>
+  </li>
+    
+  </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">BitcoinPy Documentation</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Mining</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="mining">Mining</h1>
+<h2 id="general-information">General Information</h2>
+<p>Whenever contracts are executed, a little gas has to be payed by the caller as an execution fee. The amount of gas is highly depending on the complexity of the contract and is stored into an accumulator. Once a valid mining transaction is seen on the network, the miner takes all gas that has been accumulated up to that point.</p>
+<p>Technically, mining transactions are broadcast as normal, regular transactions on the Bitcoin network. They do not provide any strength to a consensus and only pose the purpose to a) distribute all (maximum possible) 3141592 GAS over time, and b) feed the GAS fees, that were collected for contract execution, back into the eco system. That also means, that multiple mine transactions may be included in one Bitcoin block. Each transaction, to be precise, is looked at in the order it appears in the block: so when there is GAS left in the GAS accumulator, and there are two mine transactions in a block without any other contract execution transactions in between them, each of both gets the mining reward, yet only the first one gets the content of the accumulator.</p>
+<h2 id="retargeting">Retargeting</h2>
+<p>Similar to Bitcoin, the difficulty of the mining transactions is represented by a 256bit number. The "mining hash" of the transaction (see below) has to be below this target value to be eligible to claim the GAS rewards. The initial target value is set to</p>
+<pre><code> 0x000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+[ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000 big endian]
+</code></pre>
+
+<p>and is re-adjusted every 64 blocks or roughly 640 minutes in a way that a) there is on average one mining transaction every 10 minutes and b) the change of the target value is less than, or equal to, 25% between two consecutive retargets. The look-behind period, i.e., the period looked at to average the mining transaction times, are 64 blocks as well.</p>
+<h2 id="the-hashing-mechanism">The Hashing Mechanism</h2>
+<p>In order to obtain a valid mining transaction, you need to repeatedly double-SHA256 a byte string like this:</p>
+<pre><code>2e7a893a02608d5f70185933873dd73e3ea4c8b1e12d0277da851dc5ecceeb4807f2e97500af9b5c0532de416e73b08323f23db2dc5ff547e4937d0545ee44ac000000000000000000000000000000000000000023324e3958747167416544486d4d345a71333259687a615574503761386e534455445a41100fbb5bcc1d1aaab2ba481d57f1c56e72
+</code></pre>
+
+<p>Let's break down the exact meaning:</p>
+<table>
+<thead>
+<tr>
+<th>Bytes</th>
+<th>Bytes</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2e7a893a02608d5f70185933873dd73e3<br />ea4c8b1e12d0277da851dc5ecceeb48</td>
+<td>32</td>
+<td>The milestone block ID in big endian form. If you obtain it from a block explorer, you will most likely have to byte-reverse it.  In this example, the "commonly understood" block ID would be 0x48ebce...</td>
+</tr>
+<tr>
+<td>07f2e97500af9b5c0532de416e73b08323<br />f23db2dc5ff547e4937d0545ee44ac</td>
+<td>32</td>
+<td>The transaction ID of the first COutPoint, used in the inputs of your transaction. Same endianness transformation as in the point before applies</td>
+</tr>
+<tr>
+<td>00000000</td>
+<td>4</td>
+<td>Big endian VOUT of the COutPoint used. If you have more than one input in your transaction, this and the last step (i.e. 36 bytes) have to be repeated for each of them.</td>
+</tr>
+<tr>
+<td>03</td>
+<td>1</td>
+<td>Constant 0x03 = means this is a mining transaction</td>
+</tr>
+<tr>
+<td>0000000000000000</td>
+<td>8</td>
+<td>Must be all zero</td>
+</tr>
+<tr>
+<td>0000000000000000</td>
+<td>8</td>
+<td>Must be all zero</td>
+</tr>
+<tr>
+<td>23</td>
+<td>1</td>
+<td>The length indicator of the following field in bytes</td>
+</tr>
+<tr>
+<td>324e3958747167416544486d4d345a713<br />33259687a615574503761386e534455445a41</td>
+<td>23 (might vary)</td>
+<td>The string representation of the receipient address (for the GAS rewards) byte encoded</td>
+</tr>
+<tr>
+<td>10</td>
+<td>1</td>
+<td>Must be constant 0x10 -&gt; means that 16 bytes are following</td>
+</tr>
+<tr>
+<td>0fbb5bcc1d1aaab2ba481d57f1c56e72</td>
+<td>16</td>
+<td>These are 16 random bytes that you can shuffle when trying to find a byte string for which the hash meets the target requirement</td>
+</tr>
+</tbody>
+</table>
+<p>The first 32 byte, the milestone block ID, can be calculated as follows: let us assume we estimate that our mining transaction will be included in block X+1 (assuming we are currently in block X). The milestone block id, in this case, would be <code>floor((X+1)/10)*10</code>, i.e., the block number rounded down to full 10's. In case X+1 already is 0 (mod 10), then we have to take the block id of block (X+1 - 10). Again, be advised that we need to hash the big endian form of the block hash.</p>
+<p>In case you do not want to construct this byte string yourself, you can issue the following command via RPC:</p>
+<p><code>minegastemplate 2N9XtqgAeDHmM4Zq32YhzaUtP7a8nSDUDZA</code></p>
+<p>And you will get back the "transaction", which is the byte string as described above pre-configured to pay the GAS rewards to the address specified above, the current target value as well as the milestone block ID (in little endian form):</p>
+<p><code>{'transaction': '030000000000000000000000000000000023324e3958747167416544486d4d345a71333259687a615574503761386e534455445a411055555555555555555555555555555555','target': 'efffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff','milestone': '48ebceecc51d85da77022de1b1c8a43e3ed73d87335918705f8d60023a897a2e'}</code></p>
+<p>The same principles from above apply ... the last 16 bytes (here, all 0x55) can be modifies, and then the whole block can be hashed according to the rules described earlier.</p>
+<h2 id="pushing-to-the-network">Pushing to the Network</h2>
+<p>Once you have found a solution, you can push the raw bytestring (All bytes above without the milestone block ID and the COutPoints) to the network by issuing the following RPC commands:</p>
+<p>a) Obtaining a raw Bitcoin transaction that encodes the mining payload using</p>
+<p><code>sendrawcontractpacket [{"txid": "your used COutPoint txid", "vout" : COutPoint.vout}] your_bytestring</code></p>
+<p>Make sure, that you include <em>all</em> COutPoints in case you used more than one!</p>
+<p>b) Signing this raw transaction, for example using your wallet:</p>
+<p><code>signrawtransactionwithwallet HEX STRING OF THE TRANSACTION FROM LAST STEP</code></p>
+<p>c) Last but not least:</p>
+<p><code>sendrawtransaction SIGNED HEX STRING OF THE TRANSACTION FROM LAST STEP</code></p>
+<h2 id="inefficient-reference-miner">Inefficient "Reference Miner"</h2>
+<p>This principle is implemented in our quite inefficient, but easy to understand, reference miner implementation that you can find <a href="https://github.com/pycontracts/inefficient_reference_miner">here</a>. </p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../tokensfees/" class="btn btn-neutral float-right" title="Tokens and Fees">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../contracts/" class="btn btn-neutral" title="Python Contracts"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../contracts/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../tokensfees/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>
